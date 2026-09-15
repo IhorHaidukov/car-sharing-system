@@ -12,7 +12,7 @@ The project is actively being developed as part of my Java Backend portfolio.
 
 ## Technologies
 
-- Java 17
+- Java 22
 - Spring Boot
 - Spring Security
 - JWT Authentication
