@@ -34,20 +34,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         String jwt = authHeader.substring(7);
-        String username = jwtService.extractUsername(jwt);
 
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+        String username;
 
-    UsernamePasswordAuthenticationToken authentication =
-            new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-            );
+        try {
+            username = jwtService.extractUsername(jwt);
+        } catch (Exception ex) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
-        SecurityContextHolder.getContext()
-                .setAuthentication(authentication);
-        filterChain.doFilter(request, response);
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+
+            SecurityContextHolder.getContext()
+                    .setAuthentication(authentication);
+        }
+            filterChain.doFilter(request, response);
     }
 
 }

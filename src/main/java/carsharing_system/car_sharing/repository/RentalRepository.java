@@ -23,4 +23,20 @@ public interface RentalRepository extends JpaRepository<Rental,Long> {
             @Param("startTime") LocalDateTime startTime,
             @Param("endTime") LocalDateTime endTime
     );
+    @Query("""
+       SELECT COUNT(r) > 0
+       FROM Rental r
+       WHERE r.car.id = :carId
+       AND r.id <> :rentalId
+       AND r.status = 'ACTIVE'
+       AND r.startTime < :endTime
+       AND r.endTime > :startTime
+       """)
+    boolean existsOverlappingRentalExceptCurrent(
+            @Param("carId") Long carId,
+            @Param("rentalId") Long rentalId,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime
+    );
+
 }

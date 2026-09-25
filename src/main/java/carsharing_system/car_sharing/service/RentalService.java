@@ -15,6 +15,8 @@ public interface RentalService {
 
     RentalResponseDto getRentalById(Long id,String email);
 
+    RentalResponseDto returnRental(Long id,String email);
+
     RentalResponseDto updateRental(Long id,RentalRequestDto dto,String email);
 
      void deleteRental(Long id,String email);

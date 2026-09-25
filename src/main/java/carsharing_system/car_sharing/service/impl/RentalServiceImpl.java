@@ -7,10 +7,7 @@ import carsharing_system.car_sharing.entity.Rental;
 import carsharing_system.car_sharing.entity.RentalStatus;
 import carsharing_system.car_sharing.entity.Role;
 import carsharing_system.car_sharing.entity.User;
-import carsharing_system.car_sharing.exception.CarAlreadyRentedException;
-import carsharing_system.car_sharing.exception.CarNotFoundException;
-import carsharing_system.car_sharing.exception.RentalNotFoundException;
-import carsharing_system.car_sharing.exception.UserNotFoundException;
+import carsharing_system.car_sharing.exception.*;
 import carsharing_system.car_sharing.mapper.RentalMapper;
 import carsharing_system.car_sharing.repository.CarRepository;
 import carsharing_system.car_sharing.repository.RentalRepository;
@@ -18,6 +15,7 @@ import carsharing_system.car_sharing.repository.UserRepository;
 import carsharing_system.car_sharing.service.RentalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.temporal.ChronoUnit;
@@ -128,7 +126,7 @@ public class RentalServiceImpl implements RentalService {
 
 
     @Override
-    public RentalResponseDto getRentalById(Long id,String email) {
+    public RentalResponseDto getRentalById(Long id, String email) {
 
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() ->
@@ -145,7 +143,7 @@ public class RentalServiceImpl implements RentalService {
         if (currentUser.getRole() != Role.ADMIN
             && !rental.getUser().getEmail().equals(email)) {
 
-            throw new RuntimeException(
+            throw new AccessDeniedException(
                     "You cannot view another user's rental"
             );
         }
@@ -153,12 +151,8 @@ public class RentalServiceImpl implements RentalService {
         return rentalMapper.toResponseDto(rental);
     }
 
-
     @Override
-    public RentalResponseDto updateRental(
-            Long id,
-            RentalRequestDto dto,
-            String email) {
+    public RentalResponseDto returnRental(Long id, String email) {
 
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() ->
@@ -173,80 +167,131 @@ public class RentalServiceImpl implements RentalService {
                                 "User not found with email: " + email
                         )
                 );
-
         if (currentUser.getRole() != Role.ADMIN
             && !rental.getUser().getEmail().equals(email)) {
 
-            throw new RuntimeException(
-                    "You cannot update another user's rental"
+            throw new AccessDeniedException(
+                    "You cannot return another user's rental"
             );
         }
-
-        Car car = carRepository.findById(dto.getCarId())
-                .orElseThrow(() ->
-                        new CarNotFoundException(
-                                "Car not found with id: " + dto.getCarId()
-                        )
-                );
-
-        if (!dto.getEndTime().isAfter(dto.getStartTime())) {
-            throw new IllegalArgumentException(
-                    "End time must be after start time"
-            );
+        if (rental.getStatus() != RentalStatus.ACTIVE) {
+            throw new RentalNotActiveException("Rental is not active");
         }
 
-        long minutes = ChronoUnit.MINUTES.between(
-                dto.getStartTime(),
-                dto.getEndTime()
-        );
+        rental.setStatus(RentalStatus.RETURNED);
 
+        Rental savedRental = rentalRepository.save(rental);
 
-        BigDecimal pricePerMinute = car.getPricePerHour()
-                .divide(
-                        BigDecimal.valueOf(60),
-                        4,
-                        RoundingMode.HALF_UP
-                );
-
-        BigDecimal totalPrice = pricePerMinute
-                .multiply(BigDecimal.valueOf(minutes))
-                .setScale(2, RoundingMode.HALF_UP);
-
-        rental.setCar(car);
-        rental.setStartTime(dto.getStartTime());
-        rental.setEndTime(dto.getEndTime());
-        rental.setTotalPrice(totalPrice);
-
-
-        Rental updatedRental = rentalRepository.save(rental);
-
-        return rentalMapper.toResponseDto(updatedRental);
+        return rentalMapper.toResponseDto(savedRental);
     }
 
 
-    @Override
-    public void deleteRental(Long id,String email) {
+        @Override
+        public RentalResponseDto updateRental (
+                Long id,
+                RentalRequestDto dto,
+                String email){
 
-        Rental rental = rentalRepository.findById(id)
-                .orElseThrow(() ->
-                        new RentalNotFoundException(
-                                "Rental not found with id: " + id
-                        )
-                );
-        User currentUser = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UserNotFoundException(
-                                "User not found with email: " + email
-                        )
-                );
-        if (currentUser.getRole() != Role.ADMIN
-            && !rental.getUser().getEmail().equals(email)) {
+            Rental rental = rentalRepository.findById(id)
+                    .orElseThrow(() ->
+                            new RentalNotFoundException(
+                                    "Rental not found with id: " + id
+                            )
+                    );
 
-            throw new RuntimeException(
-                    "You cannot delete another user's rental"
+            User currentUser = userRepository.findByEmail(email)
+                    .orElseThrow(() ->
+                            new UserNotFoundException(
+                                    "User not found with email: " + email
+                            )
+                    );
+
+            if (currentUser.getRole() != Role.ADMIN
+                && !rental.getUser().getEmail().equals(email)) {
+
+                throw new AccessDeniedException(
+                        "You cannot update another user's rental"
+                );
+            }
+
+            Car car = carRepository.findById(dto.getCarId())
+                    .orElseThrow(() ->
+                            new CarNotFoundException(
+                                    "Car not found with id: " + dto.getCarId()
+                            )
+                    );
+
+            if (!dto.getEndTime().isAfter(dto.getStartTime())) {
+                throw new IllegalArgumentException(
+                        "End time must be after start time"
+                );
+            }
+            boolean isBusy = rentalRepository.existsOverlappingRentalExceptCurrent(
+                    dto.getCarId(),
+                    id,
+                    dto.getStartTime(),
+                    dto.getEndTime()
             );
+
+            if (isBusy) {
+                throw new CarAlreadyRentedException(
+                        "Car is already rented for this time"
+                );
+            }
+
+            long minutes = ChronoUnit.MINUTES.between(
+                    dto.getStartTime(),
+                    dto.getEndTime()
+            );
+
+
+            BigDecimal pricePerMinute = car.getPricePerHour()
+                    .divide(
+                            BigDecimal.valueOf(60),
+                            4,
+                            RoundingMode.HALF_UP
+                    );
+
+            BigDecimal totalPrice = pricePerMinute
+                    .multiply(BigDecimal.valueOf(minutes))
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            rental.setCar(car);
+            rental.setStartTime(dto.getStartTime());
+            rental.setEndTime(dto.getEndTime());
+            rental.setTotalPrice(totalPrice);
+
+
+            Rental updatedRental = rentalRepository.save(rental);
+
+            return rentalMapper.toResponseDto(updatedRental);
+
         }
 
-        rentalRepository.delete(rental);
+
+        @Override
+        public void deleteRental (Long id, String email){
+
+            Rental rental = rentalRepository.findById(id)
+                    .orElseThrow(() ->
+                            new RentalNotFoundException(
+                                    "Rental not found with id: " + id
+                            )
+                    );
+            User currentUser = userRepository.findByEmail(email)
+                    .orElseThrow(() ->
+                            new UserNotFoundException(
+                                    "User not found with email: " + email
+                            )
+                    );
+            if (currentUser.getRole() != Role.ADMIN
+                && !rental.getUser().getEmail().equals(email)) {
+
+                throw new AccessDeniedException(
+                        "You cannot delete another user's rental"
+                );
+            }
+
+            rentalRepository.delete(rental);
+        }
     }
-}

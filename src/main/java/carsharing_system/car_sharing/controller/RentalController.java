@@ -57,6 +57,16 @@ public class RentalController {
 
         return rentalService.updateRental(id, dto,email);
     }
+    @PatchMapping("/{id}/return")
+    public RentalResponseDto returnRental(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+
+        return rentalService.returnRental(id,email);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteRental(
             @PathVariable Long id,

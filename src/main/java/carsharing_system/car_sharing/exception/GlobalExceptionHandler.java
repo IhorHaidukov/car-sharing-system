@@ -16,10 +16,37 @@ public class GlobalExceptionHandler {
             UserNotFoundException ex){
         return Map.of("message", ex.getMessage());
     }
+    @ExceptionHandler(CarAlreadyRentedException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleCarAlreadyRented(
+            CarAlreadyRentedException ex) {
+
+        return Map.of(
+                "message", ex.getMessage()
+        );
+    }
 
     @ExceptionHandler(CarNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleCarNotFound(CarNotFoundException ex) {
+        return Map.of(
+                "message", ex.getMessage()
+        );
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String, String> handleAccessDenied(
+            AccessDeniedException ex) {
+
+        return Map.of(
+                "message", ex.getMessage()
+        );
+    }
+    @ExceptionHandler(RentalNotActiveException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleRentalNotActive(
+            RentalNotActiveException ex) {
+
         return Map.of(
                 "message", ex.getMessage()
         );
