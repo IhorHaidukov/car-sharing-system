@@ -1,21 +1,23 @@
 package carsharing_system.car_sharing.service;
 
-import carsharing_system.car_sharing.dto.UserDto;
 import carsharing_system.car_sharing.dto.UserRegistrationDto;
 import carsharing_system.car_sharing.dto.UserResponseDto;
-import carsharing_system.car_sharing.entity.User;
 
 import java.util.List;
 
 public interface UserService {
+
     UserResponseDto createUser(UserRegistrationDto dto);
 
     List<UserResponseDto> getAllUsers();
 
-    UserResponseDto getUserById(Long id);
+    UserResponseDto getUserById(Long id, String email);
 
-    void deleteUser(Long id);
+    void deleteUser(Long id, String email);
 
-    UserResponseDto updateUser(Long id, UserRegistrationDto dto);
+    UserResponseDto updateUser(
+            Long id,
+            UserRegistrationDto dto,
+            String email
+    );
 }
-
