@@ -58,6 +58,16 @@ public class GlobalExceptionHandler {
 
         return Map.of(
                 "message", ex.getMessage()
+
+        );
+    }
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleEmailAlreadyExists(
+            EmailAlreadyExistsException ex) {
+
+        return Map.of(
+                "message", ex.getMessage()
         );
     }
 }

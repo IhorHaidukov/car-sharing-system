@@ -5,6 +5,7 @@ import carsharing_system.car_sharing.dto.UserResponseDto;
 import carsharing_system.car_sharing.entity.Role;
 import carsharing_system.car_sharing.entity.User;
 import carsharing_system.car_sharing.exception.AccessDeniedException;
+import carsharing_system.car_sharing.exception.EmailAlreadyExistsException;
 import carsharing_system.car_sharing.exception.UserNotFoundException;
 import carsharing_system.car_sharing.mapper.UserMapper;
 import carsharing_system.car_sharing.repository.UserRepository;
@@ -25,6 +26,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto createUser(UserRegistrationDto dto) {
+
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new EmailAlreadyExistsException(
+                    "User with this email already exists"
+            );
+        }
 
         User user = userMapper.toEntity(dto);
         user.setRole(Role.USER);
