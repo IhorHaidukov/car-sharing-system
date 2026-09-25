@@ -96,6 +96,14 @@ public class UserServiceImpl implements UserService {
 
         checkAccess(user, email);
 
+        if (!user.getEmail().equals(dto.getEmail())
+            && userRepository.existsByEmail(dto.getEmail())) {
+
+            throw new EmailAlreadyExistsException(
+                    "User with this email already exists"
+            );
+        }
+
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
