@@ -10,73 +10,65 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final String MESSAGE = "message";
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String,String> handleUserNotFound(
             UserNotFoundException ex){
-        return Map.of("message", ex.getMessage());
+      return Map.of(MESSAGE, ex.getMessage());
     }
     @ExceptionHandler(CarAlreadyRentedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleCarAlreadyRented(
             CarAlreadyRentedException ex) {
 
-        return Map.of(
-                "message", ex.getMessage()
-        );
+        return Map.of(MESSAGE, ex.getMessage());
+
     }
 
     @ExceptionHandler(CarNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleCarNotFound(CarNotFoundException ex) {
-        return Map.of(
-                "message", ex.getMessage()
-        );
+        return Map.of(MESSAGE, ex.getMessage());
     }
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Map<String, String> handleAccessDenied(
             AccessDeniedException ex) {
 
-        return Map.of(
-                "message", ex.getMessage()
-        );
+        return Map.of(MESSAGE, ex.getMessage());
+
     }
     @ExceptionHandler(RentalNotActiveException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleRentalNotActive(
             RentalNotActiveException ex) {
 
-        return Map.of(
-                "message", ex.getMessage()
-        );
+        return Map.of(MESSAGE, ex.getMessage());
+
     }
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleIllegalArgument(
             IllegalArgumentException ex) {
 
-        return Map.of(
-                "message", ex.getMessage()
+        return Map.of(MESSAGE, ex.getMessage());
 
-        );
+
     }
     @ExceptionHandler(EmailAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleEmailAlreadyExists(
             EmailAlreadyExistsException ex) {
 
-        return Map.of(
-                "message", ex.getMessage()
-        );
+        return Map.of(MESSAGE, ex.getMessage());
+
     }
     @ExceptionHandler(RentalNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleRentalNotFound(
             RentalNotFoundException ex) {
 
-        return Map.of(
-                "message", ex.getMessage()
-        );
+        return Map.of(MESSAGE, ex.getMessage());
     }
 }
