@@ -85,4 +85,11 @@ public class GlobalExceptionHandler {
 
         return Map.of(MESSAGE, message);
     }
+    @ExceptionHandler(CarHasRentalsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleCarHasRentals(
+            CarHasRentalsException ex) {
+
+        return Map.of(MESSAGE, ex.getMessage());
+    }
 }

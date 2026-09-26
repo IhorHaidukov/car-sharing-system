@@ -9,13 +9,15 @@ import carsharing_system.car_sharing.repository.CarRepository;
 import carsharing_system.car_sharing.service.CarService;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
-
+import carsharing_system.car_sharing.repository.RentalRepository;
+import carsharing_system.car_sharing.exception.CarHasRentalsException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class CarServiceImpl implements CarService {
 
+    private final RentalRepository rentalRepository;
     private final CarRepository carRepository;
     private final CarMapper carMapper;
 
@@ -53,12 +55,22 @@ public class CarServiceImpl implements CarService {
         Car updateCar = carRepository.save(car);
         return carMapper.toResponseDto(updateCar);
     }
-    @Override
-    public void deleteCar(Long id){
-        Car car =carRepository.findById(id)
-                .orElseThrow(() ->
-                        new CarNotFoundException("Car not found with id: "+ id));
-                carRepository.delete(car);
 
+    @Override
+    public void deleteCar(Long id) {
+        Car car = carRepository.findById(id)
+                .orElseThrow(() ->
+                        new CarNotFoundException(
+                                "Car not found with id: " + id
+                        )
+                );
+
+        if (rentalRepository.existsByCarId(id)) {
+            throw new CarHasRentalsException(
+                    "Car cannot be deleted because it has rentals"
+            );
+        }
+
+        carRepository.delete(car);
     }
 }
