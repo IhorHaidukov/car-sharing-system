@@ -92,4 +92,11 @@ public class GlobalExceptionHandler {
 
         return Map.of(MESSAGE, ex.getMessage());
     }
+    @ExceptionHandler(UserHasRentalsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleUserHasRentals(
+            UserHasRentalsException ex) {
+
+        return Map.of(MESSAGE, ex.getMessage());
+    }
 }

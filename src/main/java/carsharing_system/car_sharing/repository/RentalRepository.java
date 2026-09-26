@@ -39,5 +39,6 @@ public interface RentalRepository extends JpaRepository<Rental,Long> {
             @Param("endTime") LocalDateTime endTime
     );
     boolean existsByCarId(Long carId);
+    boolean existsByUserId(Long userId);
 
 }
