@@ -1,6 +1,7 @@
 package carsharing_system.car_sharing.dto;
 
 import lombok.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -12,13 +13,13 @@ import java.time.LocalDateTime;
 public class RentalRequestDto {
 
 
-
-    @NonNull
+    @NotNull(message = "Car id cannot be null")
     private Long carId;
 
-    @NonNull
+    @NotNull(message = "Start time cannot be null")
     private LocalDateTime startTime;
 
-    @NonNull
+    @NotNull(message = "End time cannot be null")
     private LocalDateTime endTime;
+
 }

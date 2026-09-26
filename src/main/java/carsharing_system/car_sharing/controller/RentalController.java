@@ -22,7 +22,7 @@ public class RentalController {
 
     @PostMapping
     public RentalResponseDto createRental(
-            @RequestBody RentalRequestDto dto,
+           @Valid @RequestBody RentalRequestDto dto,
             Authentication authentication
     ) {
         String email = authentication.getName();
