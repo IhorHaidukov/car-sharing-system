@@ -24,6 +24,7 @@ public class CarRequestDto {
     @Min(1900)
     private int year;
 
-    @Positive
+    @NotNull(message = "Price per hour cannot be null")
+    @Positive(message = "Price per hour must be positive")
     private BigDecimal pricePerHour;
 }
