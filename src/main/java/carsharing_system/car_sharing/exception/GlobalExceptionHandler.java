@@ -70,4 +70,13 @@ public class GlobalExceptionHandler {
                 "message", ex.getMessage()
         );
     }
+    @ExceptionHandler(RentalNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleRentalNotFound(
+            RentalNotFoundException ex) {
+
+        return Map.of(
+                "message", ex.getMessage()
+        );
+    }
 }
