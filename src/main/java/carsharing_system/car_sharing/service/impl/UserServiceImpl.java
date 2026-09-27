@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import carsharing_system.car_sharing.repository.RentalRepository;
+import carsharing_system.car_sharing.dto.ChangePasswordDto;
+import org.springframework.security.authentication.BadCredentialsException;
 import java.util.List;
 
 @Service
@@ -119,6 +121,31 @@ public class UserServiceImpl implements UserService {
         User updatedUser = userRepository.save(user);
 
         return userMapper.toResponseDto(updatedUser);
+    }
+    @Override
+    public void changePassword(String email, ChangePasswordDto dto) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UserNotFoundException(
+                                "User not found with email: " + email
+                        )
+                );
+
+        if (!passwordEncoder.matches(
+                dto.getCurrentPassword(),
+                user.getPassword())) {
+
+            throw new BadCredentialsException(
+                    "Current password is incorrect"
+            );
+        }
+
+        user.setPassword(
+                passwordEncoder.encode(dto.getNewPassword())
+        );
+
+        userRepository.save(user);
     }
 
     private void checkAccess(User targetUser, String email) {

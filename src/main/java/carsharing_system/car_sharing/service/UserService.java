@@ -1,5 +1,6 @@
 package carsharing_system.car_sharing.service;
 
+import carsharing_system.car_sharing.dto.ChangePasswordDto;
 import carsharing_system.car_sharing.dto.UserRegistrationDto;
 import carsharing_system.car_sharing.dto.UserResponseDto;
 import carsharing_system.car_sharing.dto.UserUpdateDto;
@@ -17,4 +18,6 @@ public interface UserService {
     void deleteUser(Long id, String email);
 
     UserResponseDto updateUser(Long id, UserUpdateDto dto, String email);
+
+    void changePassword(String email, ChangePasswordDto dto);
 }

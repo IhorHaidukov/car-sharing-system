@@ -1,11 +1,13 @@
 package carsharing_system.car_sharing.controller;
 
+import carsharing_system.car_sharing.dto.ChangePasswordDto;
 import carsharing_system.car_sharing.dto.UserRegistrationDto;
 import carsharing_system.car_sharing.dto.UserResponseDto;
 import carsharing_system.car_sharing.dto.UserUpdateDto;
 import carsharing_system.car_sharing.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -58,5 +60,17 @@ public class UserController {
                 dto,
                 principal.getName()
         );
+    }
+    @PatchMapping("/password")
+    public ResponseEntity<Void> changePassword(
+            @Valid @RequestBody ChangePasswordDto dto,
+            Principal principal) {
+
+        userService.changePassword(
+                principal.getName(),
+                dto
+        );
+
+        return ResponseEntity.noContent().build();
     }
 }
