@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-
+import org.springframework.security.authentication.BadCredentialsException;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -98,5 +98,15 @@ public class GlobalExceptionHandler {
             UserHasRentalsException ex) {
 
         return Map.of(MESSAGE, ex.getMessage());
+    }
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, String> handleBadCredentials(
+            BadCredentialsException ex) {
+
+        return Map.of(
+                MESSAGE,
+                "Invalid email or password"
+        );
     }
 }
