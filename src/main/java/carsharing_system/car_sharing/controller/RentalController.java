@@ -37,7 +37,9 @@ public class RentalController {
     }
 
     @GetMapping("/{id}")
-    public RentalResponseDto getRentalById(@PathVariable Long id,Authentication authentication) {
+    public RentalResponseDto getRentalById(
+            @PathVariable Long id,
+            Authentication authentication) {
         String email = authentication.getName();
         return rentalService.getRentalById(id,email);
     }
