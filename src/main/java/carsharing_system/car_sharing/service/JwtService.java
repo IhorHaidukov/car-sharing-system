@@ -6,8 +6,8 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.StandardCharsets;
+import io.jsonwebtoken.io.Decoders;
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Service
@@ -20,17 +20,19 @@ public class JwtService {
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 *60))
-                .signWith(Keys.hmacShaKeyFor(
-                        secret.getBytes(StandardCharsets.UTF_8)
-                ))
+                .signWith(getSigningKey())
                 .compact();
     }
     public String extractUsername(String token) {
         Claims claims = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
+                .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
         return claims.getSubject();
+    }
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }
