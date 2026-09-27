@@ -2,6 +2,7 @@ package carsharing_system.car_sharing.service.impl;
 
 import carsharing_system.car_sharing.dto.UserRegistrationDto;
 import carsharing_system.car_sharing.dto.UserResponseDto;
+import carsharing_system.car_sharing.dto.UserUpdateDto;
 import carsharing_system.car_sharing.entity.Role;
 import carsharing_system.car_sharing.entity.User;
 import carsharing_system.car_sharing.exception.AccessDeniedException;
@@ -91,7 +92,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto updateUser(
             Long id,
-            UserRegistrationDto dto,
+            UserUpdateDto dto,
             String email) {
 
         User user = userRepository.findById(id)
@@ -114,7 +115,6 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         User updatedUser = userRepository.save(user);
 

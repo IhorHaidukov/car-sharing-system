@@ -2,6 +2,7 @@ package carsharing_system.car_sharing.service;
 
 import carsharing_system.car_sharing.dto.UserRegistrationDto;
 import carsharing_system.car_sharing.dto.UserResponseDto;
+import carsharing_system.car_sharing.dto.UserUpdateDto;
 
 import java.util.List;
 
@@ -15,9 +16,5 @@ public interface UserService {
 
     void deleteUser(Long id, String email);
 
-    UserResponseDto updateUser(
-            Long id,
-            UserRegistrationDto dto,
-            String email
-    );
+    UserResponseDto updateUser(Long id, UserUpdateDto dto, String email);
 }

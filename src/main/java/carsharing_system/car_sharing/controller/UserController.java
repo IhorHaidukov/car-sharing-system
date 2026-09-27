@@ -2,6 +2,7 @@ package carsharing_system.car_sharing.controller;
 
 import carsharing_system.car_sharing.dto.UserRegistrationDto;
 import carsharing_system.car_sharing.dto.UserResponseDto;
+import carsharing_system.car_sharing.dto.UserUpdateDto;
 import carsharing_system.car_sharing.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class UserController {
     @PutMapping("/{id}")
     public UserResponseDto updateUser(
             @PathVariable Long id,
-            @Valid @RequestBody UserRegistrationDto dto,
+            @Valid @RequestBody UserUpdateDto dto,
             Principal principal) {
 
         return userService.updateUser(
