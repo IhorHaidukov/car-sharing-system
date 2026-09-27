@@ -20,9 +20,9 @@ public class CarRequestDto {
     @NotBlank
     private String model;
 
-    @NotNull
-    @Min(1900)
-    private int year;
+    @NotNull(message = "Year cannot be null")
+    @Min(value = 1900, message = "Year must be at least 1900")
+    private Integer year;
 
     @NotNull(message = "Price per hour cannot be null")
     @Positive(message = "Price per hour must be positive")
