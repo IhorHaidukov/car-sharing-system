@@ -32,7 +32,8 @@ public class SecurityConfig {
                                         "/v3/api-docs/**"
                                 ).permitAll()
 
-                .requestMatchers("/auth/login", "/api/users").permitAll()
+                                .requestMatchers("/auth/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/cars/**").permitAll()
 
                 .requestMatchers(HttpMethod.POST, "/api/cars/**").hasAuthority("ADMIN")
