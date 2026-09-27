@@ -38,7 +38,7 @@ public class CarServiceImpl implements CarService {
     public CarResponseDto getCarById(Long id){
         Car car = carRepository.findById(id)
                 .orElseThrow(() ->
-                        new CarNotFoundException("Car not found whit id: "+ id));
+                        new CarNotFoundException("Car not found with id: "+ id));
         return carMapper.toResponseDto(car);
 
     }
