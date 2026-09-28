@@ -2,13 +2,13 @@
 
 Car Sharing System is a backend REST API built with Java and Spring Boot.
 
-The application allows users to register, authenticate using JWT, view cars, and manage car rentals. The system supports role-based authorization with USER and ADMIN roles.
+The application allows users to register, authenticate using JWT, view cars, submit driver licenses for verification, and manage car rentals. The system supports role-based authorization with USER and ADMIN roles.
 
 ## Project Status
 
 ✅ Core backend functionality completed
 
-The project includes authentication, role-based authorization, car and rental management, business validation, automated tests, PostgreSQL persistence, Swagger documentation, and Docker support.
+The project includes authentication, role-based authorization, driver license verification, car and rental management, business validation, automated tests, PostgreSQL persistence, Swagger documentation, and Docker support.
 
 ## Technologies
 
@@ -36,6 +36,10 @@ The project includes authentication, role-based authorization, car and rental ma
 - Password encryption with BCrypt
 - JWT authentication
 - Role-based authorization with USER and ADMIN roles
+- Driver license submission and verification
+- Driver license status workflow: PENDING, VERIFIED, REJECTED
+- ADMIN access to review driver license submissions
+- Rentals require a VERIFIED driver license
 - Car CRUD operations
 - Rental creation, update, deletion, and return
 - Rental price calculation
@@ -55,6 +59,9 @@ The project includes authentication, role-based authorization, car and rental ma
 
 - Guests can register and view cars
 - Authenticated users can manage their own rentals
+- Authenticated users can submit and view their own driver license
+- Only ADMIN users can view all driver licenses and change their verification status
+- Users can create rentals only with a VERIFIED driver license
 - ADMIN users can create, update, and delete cars
 - ADMIN users can view all users
 - ADMIN users can view all rentals
@@ -70,6 +77,7 @@ The project includes authentication, role-based authorization, car and rental ma
 - `POST /api/users` — Register a new user
 - `GET /api/users/{id}` — Get user by ID
 - `PUT /api/users/{id}` — Update user
+- `PATCH /api/users/password` — Change password for the authenticated user
 - `DELETE /api/users/{id}` — Delete user
 - `GET /api/users/all` — Get all users (ADMIN)
 
@@ -80,6 +88,13 @@ The project includes authentication, role-based authorization, car and rental ma
 - `POST /api/cars` — Create a car (ADMIN)
 - `PUT /api/cars/{id}` — Update a car (ADMIN)
 - `DELETE /api/cars/{id}` — Delete a car (ADMIN)
+
+### Driver Licenses
+
+- `POST /api/driver-licenses` — Submit a driver license for verification
+- `GET /api/driver-licenses/my` — Get the authenticated user's driver license
+- `GET /api/driver-licenses` — Get all driver licenses (ADMIN)
+- `PATCH /api/driver-licenses/{id}/status` — Update driver license status (ADMIN)
 
 ### Rentals
 
@@ -96,6 +111,7 @@ The project includes authentication, role-based authorization, car and rental ma
 The rental service includes validation for the main rental scenarios:
 
 - A car cannot be rented for overlapping time periods
+- A user can create a rental only if their driver license has VERIFIED status
 - Rental end time must be later than start time
 - Rental price is calculated using rental duration and the car's hourly price
 - Only the rental owner can manage their rental
@@ -115,6 +131,18 @@ Example response:
   "message": "Car is already rented for this time"
 }
 ```
+
+## Driver License Verification
+
+Driver licenses use the following verification statuses:
+
+- `PENDING` — submitted and waiting for review
+- `VERIFIED` — approved by an ADMIN
+- `REJECTED` — rejected by an ADMIN
+
+A newly submitted driver license receives `PENDING` status.
+
+Only users with a `VERIFIED` driver license can create a rental.
 
 ## Authentication
 
@@ -159,7 +187,7 @@ OpenAPI specification:
 http://localhost:8080/v3/api-docs
 ```
 
-Swagger can be used to test registration, authentication, cars, rentals, and protected endpoints.
+Swagger can be used to test registration, authentication, cars, rentals, driver license verification, and protected endpoints.
 
 ## Running with Docker
 
@@ -170,6 +198,7 @@ Swagger can be used to test registration, authentication, cars, rentals, and pro
 
 ### Environment Variables
 
+A `.env.example` file is included as a template for required environment variables.
 Create a `.env` file in the project root:
 
 ```env
@@ -210,11 +239,15 @@ Do not use `docker compose down -v` if you want to keep PostgreSQL data, because
 
 ## Testing
 
-The project includes unit tests for rental business logic using JUnit 5 and Mockito.
+The project includes unit tests for rental, driver license, and user service business logic using JUnit 5 and Mockito.
 
 Covered scenarios include:
 
 - Successful rental creation
+- Rental creation requires a VERIFIED driver license
+- Rental creation is rejected when driver license is missing
+- Driver license submission and status update scenarios
+- User deletion removes the associated driver license
 - Prevention of overlapping rentals
 - Invalid rental dates
 - User not found
@@ -272,12 +305,15 @@ The main application uses PostgreSQL.
 Main entities:
 
 - User
+- DriverLicense
 - Car
 - Rental
 
 Relationships:
 
 - A User can have multiple Rentals
+- Each User can have one DriverLicense
+- Each DriverLicense belongs to one User
 - A Car can have multiple Rentals over different time periods
 - Each Rental belongs to one User and one Car
 
@@ -291,6 +327,10 @@ Main security rules:
 - Login is public
 - Car viewing is public
 - Rental operations require authentication
+- Driver license submission requires authentication
+- Viewing all driver licenses requires ADMIN authority
+- Changing driver license status requires ADMIN authority
+- Creating a rental requires a VERIFIED driver license
 - Car creation, update, and deletion require ADMIN authority
 - Viewing all users requires ADMIN authority
 - Viewing all rentals requires ADMIN authority
