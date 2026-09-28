@@ -123,4 +123,11 @@ public class GlobalExceptionHandler {
 
         return Map.of(MESSAGE, ex.getMessage());
     }
+    @ExceptionHandler(DriverLicenseNotVerifiedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String, String> handleDriverLicenseNotVerified(
+            DriverLicenseNotVerifiedException ex) {
+
+        return Map.of(MESSAGE, ex.getMessage());
+    }
 }

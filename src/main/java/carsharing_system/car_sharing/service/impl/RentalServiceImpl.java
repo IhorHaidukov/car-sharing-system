@@ -10,11 +10,13 @@ import carsharing_system.car_sharing.entity.User;
 import carsharing_system.car_sharing.exception.*;
 import carsharing_system.car_sharing.mapper.RentalMapper;
 import carsharing_system.car_sharing.repository.CarRepository;
+import carsharing_system.car_sharing.repository.DriverLicenseRepository;
 import carsharing_system.car_sharing.repository.RentalRepository;
 import carsharing_system.car_sharing.repository.UserRepository;
 import carsharing_system.car_sharing.service.RentalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import carsharing_system.car_sharing.entity.DriverLicenseStatus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -29,7 +31,7 @@ public class RentalServiceImpl implements RentalService {
     private final UserRepository userRepository;
     private final CarRepository carRepository;
     private final RentalMapper rentalMapper;
-
+    private final DriverLicenseRepository driverLicenseRepository;
 
     @Override
     public RentalResponseDto createRental(
@@ -42,6 +44,19 @@ public class RentalServiceImpl implements RentalService {
                                 "User not found with email: " + email
                         )
                 );
+        var driverLicense = driverLicenseRepository
+                .findByUserId(user.getId())
+                .orElseThrow(() ->
+                        new DriverLicenseNotVerifiedException(
+                                "Verified driver license is required to rent a car"
+                        )
+                );
+
+        if (driverLicense.getStatus() != DriverLicenseStatus.VERIFIED) {
+            throw new DriverLicenseNotVerifiedException(
+                    "Verified driver license is required to rent a car"
+            );
+        }
 
         Car car = carRepository.findById(dto.getCarId())
                 .orElseThrow(() ->

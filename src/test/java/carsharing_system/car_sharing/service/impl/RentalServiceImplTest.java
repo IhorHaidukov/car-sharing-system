@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import carsharing_system.car_sharing.repository.DriverLicenseRepository;
 import org.mockito.junit.jupiter.MockitoExtension;
 import carsharing_system.car_sharing.dto.RentalRequestDto;
 
@@ -44,6 +45,9 @@ class RentalServiceImplTest {
     @InjectMocks
     private RentalServiceImpl rentalService;
 
+    @Mock
+    private DriverLicenseRepository driverLicenseRepository;
+
 
     @Test
     void createRental_whenCarIsBusy_shouldThrowException() {
@@ -65,6 +69,14 @@ class RentalServiceImplTest {
 
         when(userRepository.findByEmail("testuser@gmail.com"))
                 .thenReturn(Optional.of(user));
+
+        DriverLicense driverLicense = DriverLicense.builder()
+                .status(DriverLicenseStatus.VERIFIED)
+                .user(user)
+                .build();
+
+        when(driverLicenseRepository.findByUserId(user.getId()))
+                .thenReturn(Optional.of(driverLicense));
 
 
         Car car = Car.builder()
@@ -116,6 +128,14 @@ class RentalServiceImplTest {
 
         when(userRepository.findByEmail("test@test.com"))
                 .thenReturn(Optional.of(user));
+
+        DriverLicense driverLicense = DriverLicense.builder()
+                .status(DriverLicenseStatus.VERIFIED)
+                .user(user)
+                .build();
+
+        when(driverLicenseRepository.findByUserId(user.getId()))
+                .thenReturn(Optional.of(driverLicense));
         when(rentalRepository.existsOverlappingRental(
                 dto.getCarId(),
                 dto.getStartTime(),
@@ -174,6 +194,14 @@ class RentalServiceImplTest {
         when(userRepository.findByEmail("tot@test.com"))
                 .thenReturn(Optional.of(user));
 
+        DriverLicense driverLicense = DriverLicense.builder()
+                .status(DriverLicenseStatus.VERIFIED)
+                .user(user)
+                .build();
+
+        when(driverLicenseRepository.findByUserId(user.getId()))
+                .thenReturn(Optional.of(driverLicense));
+
         assertThrows(
                 IllegalArgumentException.class,
                 () -> rentalService.createRental(dto, "tot@test.com")
@@ -181,14 +209,15 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void notExistMailInData(){
+    void notExistMailInData() {
 
 
         RentalRequestDto dto = new RentalRequestDto();
         when(userRepository.findByEmail("missing@test.com"))
                 .thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class,()-> rentalService.createRental(dto,"missing@test.com"));
+        assertThrows(UserNotFoundException.class, () -> rentalService.createRental(dto, "missing@test.com"));
     }
+
     @Test
     void createRental_whenCarNotFound_shouldThrowException() {
 
@@ -207,11 +236,20 @@ class RentalServiceImplTest {
         when(userRepository.findByEmail("tyt@test.com"))
                 .thenReturn(Optional.of(user));
 
+        DriverLicense driverLicense = DriverLicense.builder()
+                .status(DriverLicenseStatus.VERIFIED)
+                .user(user)
+                .build();
+
+        when(driverLicenseRepository.findByUserId(user.getId()))
+                .thenReturn(Optional.of(driverLicense));
+
         when(carRepository.findById(99L))
                 .thenReturn(Optional.empty());
 
-        assertThrows(CarNotFoundException.class,()-> rentalService.createRental(dto,"tyt@test.com"));
+        assertThrows(CarNotFoundException.class, () -> rentalService.createRental(dto, "tyt@test.com"));
     }
+
     @Test
     void returnRental_whenRentalIsActive_shouldReturnSuccessfully() {
 
@@ -271,8 +309,9 @@ class RentalServiceImplTest {
                 .thenReturn(Optional.of(user));
 
 
-        assertThrows(RentalNotActiveException.class,()-> rentalService.returnRental(12L,"test7@test.com"));
+        assertThrows(RentalNotActiveException.class, () -> rentalService.returnRental(12L, "test7@test.com"));
     }
+
     @Test
     void returnRental_whenUserIsNotOwner_shouldThrowAccessDeniedException() {
 
