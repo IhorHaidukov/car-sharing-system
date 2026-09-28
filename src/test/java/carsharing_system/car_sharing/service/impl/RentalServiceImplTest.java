@@ -389,6 +389,10 @@ class RentalServiceImplTest {
                 .thenReturn(responseDto);
         RentalResponseDto result =
                 rentalService.updateRental(20L, dto, "update@test.com");
+        assertEquals(
+                new BigDecimal("180.00"),
+                result.getTotalPrice()
+        );
 
         ArgumentCaptor<Rental> captor =
                 ArgumentCaptor.forClass(Rental.class);
@@ -400,6 +404,39 @@ class RentalServiceImplTest {
         assertEquals(
                 new BigDecimal("180.00"),
                 savedRental.getTotalPrice()
+        );
+    }
+
+    @Test
+    void createRental_whenLicenseNotVerified_shouldThrowException() {
+
+        User user = User.builder()
+                .id(1L)
+                .email("user@test.com")
+                .build();
+
+        RentalRequestDto dto = new RentalRequestDto();
+        dto.setCarId(1L);
+        dto.setStartTime(LocalDateTime.of(2026, 9, 20, 10, 0));
+        dto.setEndTime(LocalDateTime.of(2026, 9, 20, 12, 0));
+
+        DriverLicense driverLicense = DriverLicense.builder()
+                .status(DriverLicenseStatus.PENDING)
+                .user(user)
+                .build();
+
+        when(userRepository.findByEmail("user@test.com"))
+                .thenReturn(Optional.of(user));
+
+        when(driverLicenseRepository.findByUserId(1L))
+                .thenReturn(Optional.of(driverLicense));
+
+        assertThrows(
+                DriverLicenseNotVerifiedException.class,
+                () -> rentalService.createRental(
+                        dto,
+                        "user@test.com"
+                )
         );
     }
 
