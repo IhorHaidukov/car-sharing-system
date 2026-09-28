@@ -440,5 +440,29 @@ class RentalServiceImplTest {
         );
     }
 
+    @Test
+    void createRental_whenDriverLicenseMissing_shouldThrowException() {
+
+        User user = User.builder()
+                .id(1L)
+                .email("user@test.com")
+                .build();
+
+        RentalRequestDto dto = new RentalRequestDto();
+
+        when(userRepository.findByEmail("user@test.com"))
+                .thenReturn(Optional.of(user));
+
+        when(driverLicenseRepository.findByUserId(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                DriverLicenseNotVerifiedException.class,
+                () -> rentalService.createRental(
+                        dto,
+                        "user@test.com"
+                )
+        );
+    }
 
 }
