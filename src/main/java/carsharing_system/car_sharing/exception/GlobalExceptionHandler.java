@@ -109,4 +109,18 @@ public class GlobalExceptionHandler {
                 "Invalid email or password"
         );
     }
+    @ExceptionHandler(DriverLicenseNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleDriverLicenseNotFound(
+            DriverLicenseNotFoundException ex) {
+
+        return Map.of(MESSAGE, ex.getMessage());
+    }
+    @ExceptionHandler(DriverLicenseAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleDriverLicenseAlreadyExists(
+            DriverLicenseAlreadyExistsException ex) {
+
+        return Map.of(MESSAGE, ex.getMessage());
+    }
 }

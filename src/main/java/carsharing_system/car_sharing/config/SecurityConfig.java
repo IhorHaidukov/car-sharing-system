@@ -42,6 +42,10 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/users/all").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/rentals/all").hasAuthority("ADMIN")
+                                .requestMatchers(
+                                        HttpMethod.PATCH,
+                                        "/api/driver-licenses/*/status"
+                                ).hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(
