@@ -27,31 +27,32 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
 
-                                .requestMatchers(
-                                        "/swagger-ui/**",
-                                        "/v3/api-docs/**"
-                                ).permitAll()
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
 
-                                .requestMatchers("/auth/login").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/cars/**").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/cars/**").permitAll()
 
-                .requestMatchers(HttpMethod.POST, "/api/cars/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/cars/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/cars/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/cars/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/cars/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/cars/**").hasAuthority("ADMIN")
 
-                .requestMatchers("/api/users/all").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/rentals/all").hasAuthority("ADMIN")
-                                .requestMatchers(
-                                        HttpMethod.PATCH,
-                                        "/api/driver-licenses/*/status"
-                                ).hasAuthority("ADMIN")
-                .anyRequest().authenticated()
+                        .requestMatchers("/api/users/all").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/rentals/all").hasAuthority("ADMIN")
+                        .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/api/driver-licenses/*/status"
+                        ).hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/driver-licenses").hasAuthority("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(
-                jwtAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class
-        )
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                )
                 .build();
     }
 

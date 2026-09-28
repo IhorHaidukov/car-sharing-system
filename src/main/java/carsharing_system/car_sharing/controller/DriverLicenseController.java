@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/driver-licenses")
@@ -43,5 +44,10 @@ public class DriverLicenseController {
             @RequestParam DriverLicenseStatus status) {
 
         return driverLicenseService.updateStatus(id, status);
+    }
+
+    @GetMapping
+    public List<DriverLicenseResponseDto> getAllLicenses() {
+        return driverLicenseService.getAllLicenses();
     }
 }

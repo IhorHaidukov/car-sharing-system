@@ -15,6 +15,8 @@ import carsharing_system.car_sharing.service.DriverLicenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DriverLicenseServiceImpl implements DriverLicenseService {
@@ -99,5 +101,13 @@ public class DriverLicenseServiceImpl implements DriverLicenseService {
                 driverLicenseRepository.save(driverLicense);
 
         return driverLicenseMapper.toResponseDto(updatedLicense);
+    }
+
+    @Override
+    public List<DriverLicenseResponseDto> getAllLicenses() {
+        return driverLicenseRepository.findAll()
+                .stream()
+                .map(driverLicenseMapper::toResponseDto)
+                .toList();
     }
 }
