@@ -10,6 +10,7 @@ import carsharing_system.car_sharing.exception.EmailAlreadyExistsException;
 import carsharing_system.car_sharing.exception.UserHasRentalsException;
 import carsharing_system.car_sharing.exception.UserNotFoundException;
 import carsharing_system.car_sharing.mapper.UserMapper;
+import carsharing_system.car_sharing.repository.DriverLicenseRepository;
 import carsharing_system.car_sharing.repository.UserRepository;
 import carsharing_system.car_sharing.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import carsharing_system.car_sharing.repository.RentalRepository;
 import carsharing_system.car_sharing.dto.ChangePasswordDto;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -28,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RentalRepository rentalRepository;
+    private final DriverLicenseRepository driverLicenseRepository;
 
     @Override
     public UserResponseDto createUser(UserRegistrationDto dto) {
@@ -72,6 +76,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long id, String email) {
         User user = userRepository.findById(id)
                 .orElseThrow(() ->
@@ -87,6 +92,8 @@ public class UserServiceImpl implements UserService {
                     "User cannot be deleted because they have rentals"
             );
         }
+        driverLicenseRepository.findByUserId(id)
+                .ifPresent(driverLicenseRepository::delete);
 
         userRepository.delete(user);
     }
