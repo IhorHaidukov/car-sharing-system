@@ -12,6 +12,8 @@ public class DriverLicenseMapper {
 
         return DriverLicenseResponseDto.builder()
                 .id(driverLicense.getId())
+                .userId(driverLicense.getUser().getId())
+                .userEmail(driverLicense.getUser().getEmail())
                 .licenseNumber(driverLicense.getLicenseNumber())
                 .photoUrl(driverLicense.getPhotoUrl())
                 .status(driverLicense.getStatus())

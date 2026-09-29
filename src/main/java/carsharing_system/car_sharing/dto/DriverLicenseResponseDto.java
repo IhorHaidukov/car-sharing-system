@@ -12,4 +12,6 @@ public class DriverLicenseResponseDto {
     private String licenseNumber;
     private String photoUrl;
     private DriverLicenseStatus status;
+    private Long userId;
+    private String userEmail;
 }
