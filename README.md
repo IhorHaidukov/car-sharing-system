@@ -112,7 +112,9 @@ The rental service includes validation for the main rental scenarios:
 
 - A car cannot be rented for overlapping time periods
 - A user can create a rental only if their driver license has VERIFIED status
+- Rental start time cannot be in the past
 - Rental end time must be later than start time
+- Only ACTIVE rentals can be updated
 - Rental price is calculated using rental duration and the car's hourly price
 - Only the rental owner can manage their rental
 - An already returned rental cannot be returned again
@@ -253,6 +255,7 @@ Covered scenarios include:
 - User not found
 - Car not found
 - Successful car return
+- Attempt to update an inactive rental
 - Attempt to return an inactive rental
 - Rental ownership validation
 - Rental price recalculation
