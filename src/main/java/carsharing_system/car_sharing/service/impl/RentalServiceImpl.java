@@ -20,6 +20,7 @@ import carsharing_system.car_sharing.entity.DriverLicenseStatus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -55,6 +56,12 @@ public class RentalServiceImpl implements RentalService {
         if (driverLicense.getStatus() != DriverLicenseStatus.VERIFIED) {
             throw new DriverLicenseNotVerifiedException(
                     "Verified driver license is required to rent a car"
+            );
+        }
+
+        if (dto.getStartTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(
+                    "Start time cannot be in the past"
             );
         }
 

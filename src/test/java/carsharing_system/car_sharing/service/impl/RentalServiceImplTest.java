@@ -54,9 +54,11 @@ class RentalServiceImplTest {
         RentalRequestDto dto = new RentalRequestDto();
 
         dto.setCarId(6L);
-        dto.setStartTime(LocalDateTime.of(2026, 9, 20, 10, 0));
-        dto.setEndTime(LocalDateTime.of(2026, 9, 20, 12, 0));
+        LocalDateTime startTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime endTime = startTime.plusHours(2);
 
+        dto.setStartTime(startTime);
+        dto.setEndTime(endTime);
 
         User user = User.builder()
                 .id(26L)
@@ -121,8 +123,11 @@ class RentalServiceImplTest {
         RentalRequestDto dto = new RentalRequestDto();
 
         dto.setCarId(1L);
-        dto.setStartTime(LocalDateTime.of(2026, 9, 20, 10, 0));
-        dto.setEndTime(LocalDateTime.of(2026, 9, 20, 12, 0));
+        LocalDateTime startTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime endTime = startTime.plusHours(2);
+
+        dto.setStartTime(startTime);
+        dto.setEndTime(endTime);
         when(carRepository.findById(1L))
                 .thenReturn(Optional.of(car));
 
@@ -186,8 +191,11 @@ class RentalServiceImplTest {
         RentalRequestDto dto = new RentalRequestDto();
 
         dto.setCarId(1L);
-        dto.setStartTime(LocalDateTime.of(2026, 9, 20, 12, 0));
-        dto.setEndTime(LocalDateTime.of(2026, 9, 20, 10, 0));
+        LocalDateTime startTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime endTime = startTime.minusHours(2);
+
+        dto.setStartTime(startTime);
+        dto.setEndTime(endTime);
 
         when(carRepository.findById(1L))
                 .thenReturn(Optional.of(car));
@@ -229,9 +237,11 @@ class RentalServiceImplTest {
 
 
         dto.setCarId(99L);
-        dto.setStartTime(LocalDateTime.of(2026, 9, 20, 10, 0));
-        dto.setEndTime(LocalDateTime.of(2026, 9, 20, 12, 0));
+        LocalDateTime startTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime endTime = startTime.minusHours(2);
 
+        dto.setStartTime(startTime);
+        dto.setEndTime(endTime);
 
         when(userRepository.findByEmail("tyt@test.com"))
                 .thenReturn(Optional.of(user));
