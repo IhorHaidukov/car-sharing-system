@@ -236,6 +236,12 @@ public class RentalServiceImpl implements RentalService {
                 );
             }
 
+            if (rental.getStatus() != RentalStatus.ACTIVE) {
+                throw new RentalNotActiveException(
+                        "Only active rental can be updated"
+                );
+            }
+
             Car car = carRepository.findById(dto.getCarId())
                     .orElseThrow(() ->
                             new CarNotFoundException(

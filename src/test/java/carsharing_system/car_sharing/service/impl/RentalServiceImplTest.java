@@ -475,4 +475,35 @@ class RentalServiceImplTest {
         );
     }
 
+    @Test
+    void updateRental_whenRentalIsReturned_shouldThrowException() {
+
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("returned@test.com");
+        user.setRole(Role.USER);
+
+        Rental rental = new Rental();
+        rental.setId(30L);
+        rental.setUser(user);
+        rental.setStatus(RentalStatus.RETURNED);
+
+        RentalRequestDto dto = new RentalRequestDto();
+
+        when(rentalRepository.findById(30L))
+                .thenReturn(Optional.of(rental));
+
+        when(userRepository.findByEmail("returned@test.com"))
+                .thenReturn(Optional.of(user));
+
+        assertThrows(
+                RentalNotActiveException.class,
+                () -> rentalService.updateRental(
+                        30L,
+                        dto,
+                        "returned@test.com"
+                )
+        );
+    }
+
 }
