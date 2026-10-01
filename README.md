@@ -1,8 +1,8 @@
 # Car Sharing System
 
-Car Sharing System is a backend REST API built with Java and Spring Boot.
+Car Sharing System is a backend REST API built with Java 22, Spring Boot, PostgreSQL, Spring Security, JWT, Docker, JUnit 5 and Mockito.
 
-The application allows users to register, authenticate using JWT, view cars, submit driver licenses for verification, and manage car rentals. The system supports role-based authorization with USER and ADMIN roles.
+The application allows users to register, authenticate, view cars, submit driver licenses for verification, and manage car rentals. It supports USER and ADMIN roles, driver license verification, rental validation, overlap prevention, price calculation, and protected endpoints.
 
 ## Project Status
 
